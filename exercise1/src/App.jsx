@@ -18,8 +18,10 @@ function App() {
     const sum = await ages.reduce((a, b) => a + b, 0);
     const avg = (await sum) / ages.length;
     setAvgAge(avg);
-
-    console.log(avg);
+    console.log(
+      json.results.map((user) => `${user.name.first} ${user.name.last}`)
+    );
+    console.log(`Users avgAge `, avg);
   };
 
   useEffect(() => {
@@ -41,7 +43,7 @@ function App() {
                 <Typography variant="h5" component="div">
                   <p>{`${user.name.first} ${user.name.last}`}</p>
 
-                  <p>{user.dob.age}</p>
+                  <p>Age: {user.dob.age}</p>
                 </Typography>
               </CardContent>
             </Card>
