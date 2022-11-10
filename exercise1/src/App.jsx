@@ -8,10 +8,13 @@ import "./App.css";
 function App() {
   const [users, setUsers] = useState([]);
   const [avgAge, setAvgAge] = useState(null);
+  const [fetchError, setFetchError] = useState(false);
   const url = "https://randomuser.me/api/?results=20";
 
   const fetchUsersAndCalculateAvg = async () => {
-    const response = await fetch(url);
+    const response = await fetch(url).catch((err) => {
+      setFetchError(true), console.log(err);
+    });
     const json = await response.json();
     setUsers(json.results);
     const ages = await json.results.map((user) => user.dob.age);
@@ -22,6 +25,14 @@ function App() {
       json.results.map((user) => `${user.name.first} ${user.name.last}`)
     );
     console.log(`Users avgAge `, avg);
+  };
+
+  const loadingMessage = () => {
+    if (fetchError) {
+      return <p>Something went wrong while fetching users</p>;
+    } else {
+      return <p>Loading...</p>;
+    }
   };
 
   useEffect(() => {
@@ -50,7 +61,7 @@ function App() {
           ))}
         </div>
       ) : (
-        <h1>Calculating Avg age and Random Users...</h1>
+        <h1>{loadingMessage()}</h1>
       )}
     </div>
   );
