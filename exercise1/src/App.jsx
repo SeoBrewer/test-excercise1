@@ -8,42 +8,23 @@ import "./App.css";
 function App() {
   const [users, setUsers] = useState([]);
   const [avgAge, setAvgAge] = useState(null);
-
   const url = "https://randomuser.me/api/?results=20";
 
-  async function handleFetch() {
-    fetch(url, {
-      method: "GET",
-    }).then((response) => {
-      response.json().then((data) => {
-        setUsers(data.results);
-      });
-    });
-  }
+  const fetchUsersAndCalculateAvg = async () => {
+    const response = await fetch(url);
+    const json = await response.json();
+    setUsers(json.results);
+    const ages = await json.results.map((user) => user.dob.age);
+    const sum = await ages.reduce((a, b) => a + b, 0);
+    const avg = (await sum) / ages.length;
+    setAvgAge(avg);
 
-  async function nameLastName() {
-    const newUsers = users.map(
-      (user) => `${user.name.first} ${user.name.last}`
-    );
-    const ageUsers = users.map((user) => user.dob.age);
-
-    const average = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
-
-    const result = average(ageUsers); // 5
-    setAvgAge(result);
-    // console.log(result);
-
-    return { firstLast: newUsers, age: ageUsers, average: result };
-  }
+    console.log(avg);
+  };
 
   useEffect(() => {
-    handleFetch();
+    fetchUsersAndCalculateAvg();
   }, []);
-
-  useEffect(() => {
-    nameLastName();
-    console.log("🚀 ~ file: App.jsx ~ line 8 ~ App ~ newUsers", nameLastName());
-  }, [users]);
 
   return (
     <div className="App">
